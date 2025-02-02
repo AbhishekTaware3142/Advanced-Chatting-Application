@@ -1,0 +1,115 @@
+User Registration & Login
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class LoginForm extends JFrame {
+    private JTextField usernameField;
+    private JPasswordField passwordField;
+    private JButton loginButton;
+
+    public LoginForm() {
+        setTitle("Chat Application - Login");
+        setLayout(new GridLayout(3, 2));
+        setSize(300, 150);
+
+        usernameField = new JTextField();
+        passwordField = new JPasswordField();
+        loginButton = new JButton("Login");
+
+        add(new JLabel("Username:"));
+        add(usernameField);
+        add(new JLabel("Password:"));
+        add(passwordField);
+        add(loginButton);
+
+        loginButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+                // Validate login logic (check from DB or file)
+                System.out.println("Username: " + username + ", Password: " + password);
+            }
+        });
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+    }
+
+    public static void main(String[] args) {
+        new LoginForm().setVisible(true);
+    }
+}
+Real-time Messaging (Socket Programming):
+Server:
+import java.io.*;
+import java.net.*;
+
+public class Server {
+    public static void main(String[] args) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(12345);
+        System.out.println("Server started...");
+
+        while (true) {
+            Socket clientSocket = serverSocket.accept();
+            System.out.println("Client connected.");
+            DataInputStream input = new DataInputStream(clientSocket.getInputStream());
+            String message = input.readUTF();
+            System.out.println("Message from client: " + message);
+
+            clientSocket.close();
+        }
+    }
+}
+Client:
+import java.io.*;
+import java.net.*;
+
+public class Client {
+    public static void main(String[] args) throws IOException {
+        Socket socket = new Socket("localhost", 12345);
+        DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+        output.writeUTF("Hello, Server!");
+        socket.close();
+    }
+}
+File Sharing (File I/O):
+import java.io.*;
+import java.net.*;
+
+public class FileClient {
+    public static void main(String[] args) throws IOException {
+        Socket socket = new Socket("localhost", 12345);
+        File file = new File("path/to/file.txt");
+        byte[] byteArray = new byte[(int) file.length()];
+
+        FileInputStream fileInputStream = new FileInputStream(file);
+        fileInputStream.read(byteArray, 0, byteArray.length);
+
+        OutputStream outputStream = socket.getOutputStream();
+        outputStream.write(byteArray, 0, byteArray.length);
+        outputStream.flush();
+        socket.close();
+        fileInputStream.close();
+    }
+}
+Multithreading for Concurrent Users:
+public class ClientHandler extends Thread {
+    private Socket clientSocket;
+
+    public ClientHandler(Socket socket) {
+        this.clientSocket = socket;
+    }
+
+    public void run() {
+        try {
+            // Handle client input/output here
+            DataInputStream input = new DataInputStream(clientSocket.getInputStream());
+            String message = input.readUTF();
+            System.out.println("Received: " + message);
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
